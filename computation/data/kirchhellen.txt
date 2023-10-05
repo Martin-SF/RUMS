@@ -1,0 +1,20 @@
+2,0;2,0;Sand (Mittelpleistozän ("Ionium"))
+24,5;22,5;Sand (Oligiozän)
+32,2;7,7;Sedimentäres Karbonatfestgestein (Oligiozän)
+48,8;16,6;Sand (Oligiozän)
+59,2;10,4;Sedimentäres Karbonatfestgestein (Campanium)
+175,0;115,8;Sandstein (Santonium)
+288,8;113,8;Sedimentäres Karbonatfestgestein (Santonium)
+362,0;73,2;Sedimentäres Karbonatfestgestein (Coniacium)
+371,0;9,0;Sedimentäres Karbonatfestgestein (Turonium)
+397,6;26,6;Kalkstein mit Ton (Turonium)
+398,4;0,8;Kalkstein (Cenomanium)
+419,5;21,1;Mergelstein (Cenomanium)
+511,4;91,9;Dolomitstein (Perm)
+512,95;1,55;Tonstein (Perm)
+517,07;4,12;Konglomerat (Perm)
+667,44;150,37;Tonstein; Einlagerung aus Kohle, fest mit Sandstein und Ton (Pennsylvanium); Bemerkung: Grenze Deckgebirge/Karbon bis Flöz 12 = Ägir
+757,93;90,49;Tonstein mit Sand; Einlagerung aus Sandstein mit Ton und Kohle, fest (Pennsylvanium); Bemerkung: Flöz 12 = Ägir bis Flöz 22C = T1
+965,3;207,37;Tonstein mit Sand; Einlagerung aus Kohle, fest mit Tonstein, Sandstein und Ton (Pennsylvanium); Bemerkung: Flöz 22C = T1 bis Flöz 41 = L-Niv
+1151,76;186,46;Tonstein mit Sand; Einlagerung aus Kohle, fest mit Sandstein und Ton (Pennsylvanium); Bemerkung: Flöz 41 =L-Niv bis Flöz 54 = Zollverein 1/2
+1259,0;107,24;Tonstein mit Sand; Tonstein mit Sand; Einlagerung aus Sandstein mit Ton, Kohle, fest und Steinkohle (Pennsylvanium); Bemerkung: Flöz 54 = Zollverein 1/2 bis Endteufe der Bohrung 

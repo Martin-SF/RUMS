@@ -1,0 +1,29 @@
+{
+			"medium": "Copper", 
+			"geometries": [
+				{
+					"hierarchy": 20,
+					"shape": "Cylinder",
+					"origin": [0, 0, -1254e2],
+					"inner_radius" : 0,
+					"outer_radius": 5,
+					"height": 10e2
+				}
+			]
+		},
+
+
+
+
+# test runs
+
+0m wasser
+EcoMug_1e6_gaisser_min6e2_max2e5_30deg.hdf | N_tasks = 23
+PROPOSAL config = kirchhellen_AVG_3D.json, vcut=0.001_Highland
+propagating took   311.5 s
+(232779.0) of 1e+06 (23.28)% detector hits | min(E_i) at detector = 651.2 GeV
+
+EcoMug_1e6_gaisser_min6e2_max2e5_30deg.hdf | N_tasks = 23
+PROPOSAL config = kirchhellen_AVG_3D_840m.json, vcut=0.001_Highland
+propagating took   293.9 s
+(202018.0) of 1e+06 (20.2)% detector hits | min(E_i) at detector = 664.0 GeV

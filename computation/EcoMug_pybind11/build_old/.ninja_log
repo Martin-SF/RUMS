@@ -1,0 +1,7 @@
+# ninja log v5
+1	4088	1650646552014174512	CMakeFiles/EcoMug.dir/pybinding_EcoMug.cpp.o	dcc12b7ad889409c
+4094	7742	1650646555669093792	EcoMug.cpython-38-x86_64-linux-gnu.so	a75f244ec086eeff
+3	3950	1651664581324624409	CMakeFiles/EcoMug.dir/pybinding_EcoMug.cpp.o	4a68c523a1f500a3
+3950	8208	1651664585599531159	EcoMug.cpython-39-x86_64-linux-gnu.so	dd44e4340cfb9805
+2	4142	1651672782563590314	CMakeFiles/EcoMug.dir/pybinding_EcoMug.cpp.o	86234c5969005e4a
+4143	8183	1651672786590502225	EcoMug.cpython-310-x86_64-linux-gnu.so	cc16aa3066babd3
