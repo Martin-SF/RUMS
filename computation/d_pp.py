@@ -6,7 +6,6 @@ from tqdm import tqdm
 import pandas as pd
 import os, sys
 from uncertainties import ufloat
-# from numba import jit, njit, vectorize, prange
 from importlib import reload
 import py_library.my_plots_library as plib
 import py_library.stopwatch as stopwatch
@@ -65,18 +64,20 @@ meta={
 }
 
 t1.task('propagating', True)
-''' 
-future = client.submit(func, big_data)    # bad
 
-    big_future = client.scatter(big_data)     # good
-    future = client.submit(func, big_future)  # good
-    # own approach
-    ddf = client.scatter(ddf)
-    dfb = ddf.result().to_bag()
-    # dfb = client.map(proper.pp_propagate, db.from_delayed(dfb) ) #27s
-    # dfb = client.map(proper.pp_propagate, dfb) #27s
-'''
-# with performance_report(filename="dask-report_PROPOSAL.html"):
+# just for reference
+# future = client.submit(func, big_data)    # bad
+
+# big_future = client.scatter(big_data)     # good
+# future = client.submit(func, big_future)  # good
+# # own approach
+# ddf = client.scatter(ddf)
+# dfb = ddf.result().to_bag()
+
+
+# dfb = client.map(proper.pp_propagate, db.from_delayed(dfb) ) #27s
+# dfb = client.map(proper.pp_propagate, dfb) #27s
+
 with performance_report(filename="dask-report_PP.html"):
     ddf = dd.read_hdf(config_file.hdf_folder+config_file.file_name, key='main',
                     columns=['energy', 'theta', 'phi', 'charge', 'pos_x', 'pos_y', 'pos_z'], chunksize=chunksize)
@@ -90,7 +91,7 @@ with performance_report(filename="dask-report_PP.html"):
 t1.stop(config_file.silent)
 # %
 t2 = stopwatch.stopwatch(title='processing of results')
-t2.task('nachbereitung')
+t2.task('post processing 0')
 # todo die nachbereitung mit dask arrays beschleunigen
 ######################################################################
 ######################################################################
@@ -107,7 +108,7 @@ point2x_raw = np.array(results['point2x_raw'], dtype=FLOAT_TYPE)
 point2y_raw = np.array(results['point2y_raw'], dtype=FLOAT_TYPE)
 point2z_raw = np.array(results['point2z_raw'], dtype=FLOAT_TYPE)
 
-counter = int(sum(hit_detector))  #len von allen die True sind
+counter = int(sum(hit_detector))  # len von allen die True sind
 energies_f = np.zeros(counter, dtype=FLOAT_TYPE)
 energies_i = np.zeros(counter, dtype=FLOAT_TYPE)
 distances_f = np.zeros(counter, dtype=FLOAT_TYPE)
@@ -115,7 +116,7 @@ start_points = np.zeros(shape=(counter, 3), dtype=FLOAT_TYPE)
 end_points = np.zeros(shape=(counter, 3), dtype=FLOAT_TYPE)
 start_end_points = np.zeros(shape=(counter*2, 3), dtype=FLOAT_TYPE)
 
-t2.task('1')
+t2.task('post processing 1')
 i2 = 0
 for i in range(STATISTICS):
     if hit_detector[i] == True:
@@ -130,7 +131,7 @@ for i in range(STATISTICS):
         start_end_points[i2*2+1] = end_points[i2]
         i2 += 1
 
-t2.task('2')
+t2.task('post processing 2')
 df = pd.DataFrame()
 df['energies_f'] = energies_f
 df['energies_i'] = energies_i
@@ -141,13 +142,12 @@ df['point1z'] = start_points[:, 2]
 df['point2x'] = end_points[:, 0]
 df['point2y'] = end_points[:, 1]
 df['point2z'] = end_points[:, 2]
-#%%
+
 t2.task('write to HDF file')
 df.to_hdf(config_file.hdf_folder+config_file.file_name_results, key=f'main', format='table')
 
 s1 = f'({counter:.1f}) of {STATISTICS:.0e} ({counter/STATISTICS*100:.4})% detector hits'
 # counter_u = ufloat(counter, np.sqrt(counter))
-# s1 = f'({counter_u:.1f}) of {STATISTICS:.0e} ({counter_u/STATISTICS*100:.4})% detector hits'
 s2 = f'min(E_i) at detector = {min(energies_i)/1000:.1f} GeV'
 print(f'{s1} | {s2}')
 

@@ -10,7 +10,6 @@ import config as config_file
 from importlib import reload
 
 reload(config_file)
-# os.chdir(os.path.dirname(__file__))
 
 # print(f'PP_config : {config_file.PP_config}')
 

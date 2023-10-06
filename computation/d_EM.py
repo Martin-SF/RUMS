@@ -60,7 +60,7 @@ os.remove(tmphdf)
 t.task('post calculations')
 results_array = np.array(results)
 
-muon_pos = np.zeros(shape=(config_file.STATISTICS, 3))
+# muon_pos = np.zeros(shape=(config_file.STATISTICS, 3))
 # muon_pos = np.array(list(results_array[:, 0]))
 muon_x = np.array(results_array[:,0], dtype=float)
 muon_y = np.array(results_array[:,1], dtype=float)
@@ -69,6 +69,7 @@ muon_p = np.array(results_array[:,3], dtype=float)
 muon_theta = np.array(results_array[:, 4], dtype=float)
 muon_phi = np.array(results_array[:, 5], dtype=float)
 muon_charge = np.array(results_array[:, 6], dtype=np.int8)
+
 muon_e = slib.calculate_energy_vectorized_GeV(muon_p)  # faster than for loop
 
 

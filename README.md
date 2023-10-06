@@ -1,11 +1,10 @@
-# RUMS Ruhrgebiet Myographie Simulation
+# RUMS RUhrgebiet Myographie Simulation
 
+All simulations are performed in `computation/computation.ipynb`
 
-Here are instructions to run the `computation.ipynb`
+## Preparations
 
-## preparations
-
-### clone repo
+### Clone repo
 
 `git clone https://github.com/Martin-SF/RUMS`
 
@@ -16,15 +15,15 @@ Here are instructions to run the `computation.ipynb`
 
 `pip install -r RUMS/requirements.txt`
 
-### environment Variables (configure the paths for YOUR system)
+### Environment variables (configure the paths for YOUR system)
 
 (This is necessary so that the compiled Ecomug module and config.py can be found)
 
-`conda env config vars set PYTHONPATH="$HOME/RUMS/computation/2EcoMug_pybind11/build:$PYTHONPATH"`
+`conda env config vars set PYTHONPATH="$HOME/RUMS/computation/EcoMug_pybind11/build:$PYTHONPATH"`
 
 `conda env config vars set PYTHONPATH="$HOME/RUMS/computation:$PYTHONPATH"`
 
-(This can be advantageous if Libpython is not found when PROPOSAL is imported or other programs fail weirdly (cmake for example) 
+(This can be advantageous if Libpython is not found (for example PROPOSAL)
 
 `conda env config vars set LD_LIBRARY_PATH="$HOME/.local/anaconda3/envs/RUMS/lib:$LD_LIBRARY_PATH"`
 
@@ -35,15 +34,12 @@ Here are instructions to run the `computation.ipynb`
 
 `cd build`
 
-if this makes problems, maybe look into the env_3.10 environment requirement.txt. This environment is the only one that will compile Ecomug when using `phobos`...
-
 `cmake .. -DCMAKE_BUILD_TYPE=Release`
 
 `make`
 
-
 ## Done
 
-Don't forget to restart the conda environment! (Als VSCode as whole if you use it (trust me...))
+Don't forget to restart the conda environment! (also VSCode as whole is a good idea)
 
-Now you should be able to run `computation/computation.ipynb`!
+Now you can continue in `computation/computation.ipynb`!

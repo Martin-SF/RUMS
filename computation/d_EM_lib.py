@@ -1,4 +1,3 @@
-# from EcoMug_pybind11.build import EcoMug as em
 import EcoMug as em  # findable when setting PYTHONPATH to build folder
 import numpy as np
 from numba import vectorize
@@ -36,7 +35,6 @@ elif config_file.param=='guan':
     gen.SetDifferentialFluxGuan()
 
 # Ecomug wants altitude angle not azimuth (i couldnt find where this is actually documented lol)
-
 if config_file.max_theta!='':
     min_theta_EcoMug = 90-int(config_file.max_theta)
     gen.SetMinimumTheta(np.radians(min_theta_EcoMug))
@@ -48,7 +46,7 @@ if config_file.min_theta!='':
 
 
 H = abs(config_file.detector_pos[2] - config_file.detector_height/2)
-degree_shift = 3/2*np.pi
+angle_shift = 3/2*np.pi
 # pos = 0
 # pos = [0,0,0]
 def Ecomug_generate(_):
@@ -61,25 +59,22 @@ def Ecomug_generate(_):
     p = gen.GetGenerationMomentum()
     phi = gen.GetGenerationPhi()
     # theta = gen.GetGenerationTheta()
-    theta = degree_shift - gen.GetGenerationTheta()
+    # Ecomug uses again a weird azimuth convention, which is getting converted to "standard" here
+    theta = angle_shift - gen.GetGenerationTheta()
 
+    # distribute the muons evenly on the target circle
     # pos = gen.GetGenerationPosition()  # 7 µs
-
     angle = random.uniform(0, 2 * math.pi)
     r = random.uniform(0, config_file.radius_target_circle)
-
-    # Calculate the coordinates of the point on the circle
     x = r * math.cos(angle)
     y = r * math.sin(angle)
 
-    # to target
+    # move the muons starting point so that they hit the target circle on the ground at the detector
     angle_2 = phi
-    R_new = np.tan(theta) * H
+    r_2 = np.tan(theta) * H
+    x = x + r_2 * math.cos(angle_2)
+    y = y + r_2 * math.sin(angle_2)
 
-    x = x + R_new * math.cos(angle_2)
-    y = y + R_new * math.sin(angle_2)
-
-    # theta = degree_shift - theta
 
     # pos = [x, y, 0]
     z = 0
