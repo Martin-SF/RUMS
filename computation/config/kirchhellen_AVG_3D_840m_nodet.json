@@ -29,18 +29,6 @@
             "medium": "Copper",
             "geometries": [
                 {
-                    "hierarchy": 20,
-                    "shape": "Cylinder",
-                    "origin": [
-                        0,
-                        0,
-                        -125400
-                    ],
-                    "inner_radius": 0,
-                    "outer_radius": 5,
-                    "height": 1000
-                },
-                {
                     "hierarchy": 15,
                     "shape": "Cylinder",
                     "origin": [
