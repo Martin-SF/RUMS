@@ -23,7 +23,7 @@ All simulations are performed in `computation/computation.ipynb`
 
 `conda env config vars set PYTHONPATH="$HOME/RUMS/computation:$PYTHONPATH"`
 
-(This can be advantageous if Libpython is not found (for example PROPOSAL)
+(This can be advantageous if `libpython` is not found (for example PROPOSAL)
 
 `conda env config vars set LD_LIBRARY_PATH="$HOME/.local/anaconda3/envs/RUMS/lib:$LD_LIBRARY_PATH"`
 
@@ -43,3 +43,13 @@ All simulations are performed in `computation/computation.ipynb`
 Don't forget to restart the conda environment! (also VSCode as whole is a good idea)
 
 Now you can continue in `computation/computation.ipynb`!
+
+
+# Tips
+
+* dont forget to change the `hdf_folder` for your system `pp_tables_path` 
+
+* use subfolder parameter for marking of individual tests
+
+* You can get more insights of the calculations on the dask dashboard on localhost:8787
+
