@@ -14,8 +14,8 @@ import proposal as pp
 from distributed import Client, LocalCluster
 from dask.distributed import performance_report
 import dask.dataframe as dd
-import dask.bag as db
-import config as config_file
+# import dask.bag as db
+import config as cfg
 
 
 plt.rcParams['figure.figsize'] = (8, 6)
@@ -28,7 +28,7 @@ client = Client("localhost:8786") # phobos
 FLOAT_TYPE = np.float64
 
 
-print(f'{config_file.file_name} | N_tasks = {config_file.N_tasks}')
+print(f'{cfg.file_name} | N_tasks = {cfg.N_tasks}')
 # %
 ######################################################################
 ######################################################################
@@ -38,17 +38,17 @@ t1 = stopwatch.stopwatch(
 t1.task('initialize proposal, making interpol tables')
 
 import d_pp_lib as proper
+# client.upload_file('config.py')
 client.upload_file('d_pp_lib.py')
-client.upload_file('config.py')
-reload(proper)
-reload(stopwatch)
-reload(plib)
-reload(config_file)
-print(f'PROPOSAL config = {config_file.PP_config}, {config_file.pp_config_string}')
+# reload(proper)
+# reload(stopwatch)
+# reload(plib)
+# reload(cfg)
+print(f'PROPOSAL config = {cfg.PP_config}, {cfg.pp_config_string}')
 
 STATISTICS = len(pd.read_hdf(
-    config_file.hdf_folder+config_file.file_name, key=f'main', columns=['charge']))
-chunksize = round((STATISTICS/config_file.N_tasks))+1
+    cfg.hdf_folder+cfg.file_name, key=f'main', columns=['charge']))
+chunksize = round((STATISTICS/cfg.N_tasks))+1
 
 meta={
     'hit_detector': bool, 
@@ -63,7 +63,6 @@ meta={
     'point2z_raw': FLOAT_TYPE
 }
 
-t1.task('propagating', True)
 
 # just for reference
 # future = client.submit(func, big_data)    # bad
@@ -79,16 +78,17 @@ t1.task('propagating', True)
 # dfb = client.map(proper.pp_propagate, dfb) #27s
 
 with performance_report(filename="dask-report_PP.html"):
-    ddf = dd.read_hdf(config_file.hdf_folder+config_file.file_name, key='main',
+    df = dd.read_hdf(cfg.hdf_folder+cfg.file_name, key='main',
                     columns=['energy', 'theta', 'phi', 'charge', 'pos_x', 'pos_y', 'pos_z'], chunksize=chunksize)
-    dfb = ddf.to_bag()
+    bag = df.to_bag()
+    bag = bag.map(proper.pp_propagate)
+    df = bag.to_dataframe(meta=meta)
+    # ddfr.to_hdf(cfg.hdf_folder+'results_raw_'+cfg.file_name, key=f'main', format='table')
+    t1.task('propagating muons with PROPOSAL', True)
+    # results = client.compute(df, pure=False)
+    results = client.compute(df, pure=False).result()
 
-    dfb = dfb.map(proper.pp_propagate) #27s
-    ddfr = dfb.to_dataframe(meta=meta)
-    # ddfr.to_hdf(config_file.hdf_folder+'results_raw_'+config_file.file_name, key=f'main', format='table')
-    results = client.compute(ddfr, pure=False).result()
-
-t1.stop(config_file.silent)
+t1.stop(cfg.silent)
 # %
 t2 = stopwatch.stopwatch(title='processing of results')
 t2.task('post processing 0')
@@ -127,6 +127,7 @@ for i in range(STATISTICS):
         start_points[i2] = np.array([point1x_raw[i], point1y_raw[i], point1z_raw[i]])
         end_points[i2] = np.array([point2x_raw[i], point2y_raw[i], point2z_raw[i]])
 
+        # currently not saved in dataframe
         start_end_points[i2*2] = start_points[i2]
         start_end_points[i2*2+1] = end_points[i2]
         i2 += 1
@@ -144,11 +145,11 @@ df['point2y'] = end_points[:, 1]
 df['point2z'] = end_points[:, 2]
 
 t2.task('write to HDF file')
-df.to_hdf(config_file.hdf_folder+config_file.file_name_results, key=f'main', format='table')
+df.to_hdf(cfg.hdf_folder+cfg.file_name_results, key=f'main', format='table')
 
 s1 = f'({counter:.1f}) of {STATISTICS:.0e} ({counter/STATISTICS*100:.4})% detector hits'
 # counter_u = ufloat(counter, np.sqrt(counter))
 s2 = f'min(E_i) at detector = {min(energies_i)/1000:.1f} GeV'
 print(f'{s1} | {s2}')
 
-t2.stop(config_file.silent)
+t2.stop(cfg.silent)

@@ -4,34 +4,33 @@ import proposal as pp
 import numpy as np
 import py_library.my_plots_library as plib
 import py_library.stopwatch as stopwatch
-import py_library.simulate_lib as slib
-import os, sys
-import config as config_file
+# import py_library.simulate_lib as slib
+# import os, sys
+import config as cfg
 from importlib import reload
 
-reload(config_file)
+reload(cfg)  # important for up to date variables in worker
 
-# print(f'PP_config : {config_file.PP_config}')
 
 detector = pp.geometry.Cylinder(
-    pp.Cartesian3D(config_file.detector_pos),
+    pp.Cartesian3D(cfg.detector_pos),
     inner_radius = 0,
-    radius = config_file.detector_radius,
-    height = config_file.detector_height
+    radius = cfg.detector_radius,
+    height = cfg.detector_height
 )
 
-pp.RandomGenerator.get().set_seed(config_file.PROPOSAL_seed)
+pp.RandomGenerator.get().set_seed(cfg.PROPOSAL_seed)
 pp.InterpolationSettings.nodes_utility = 1000
-pp.InterpolationSettings.tables_path = config_file.pp_tables_path
+pp.InterpolationSettings.tables_path = cfg.pp_tables_path
 
 prop_plus = pp.Propagator(
     particle_def=pp.particle.MuPlusDef(),
-    path_to_config_file=config_file.path_to_config_file
+    path_to_config_file=cfg.path_to_config_file
 )
 
 prop_minus = pp.Propagator(
     particle_def=pp.particle.MuMinusDef(),
-    path_to_config_file=config_file.path_to_config_file
+    path_to_config_file=cfg.path_to_config_file
 )
 
 init_state = pp.particle.ParticleState()
@@ -57,18 +56,18 @@ def pp_propagate(input):
 
     # t1.task('give muon to proposal')  # 17% of loop time
     # init_state.momentum = momentum  # MeV
-    energy_init = energy_init*1000
-    init_state.energy = energy_init   # MeV
+    energy_init = energy_init*1000   # GeV into MeV
+    init_state.energy = energy_init
     init_state.position = pp.Cartesian3D(np.array([pos_x, pos_y, pos_z]))
     init_state.direction = pp.Cartesian3D(pp.Spherical3D(1, phi, theta))
 
     try:
         if (charge == 1):
             track = prop_plus.propagate(
-                init_state, *config_file.propagate_settings)
+                init_state, *cfg.propagate_settings)
         else:
             track = prop_minus.propagate(
-                init_state, *config_file.propagate_settings)
+                init_state, *cfg.propagate_settings)
     except Exception as e:
         print(e)
         traceback.print_exc()
@@ -78,9 +77,11 @@ def pp_propagate(input):
         # muons.append(current_muon)
 
     # t1.task('did geometry hit?')  # 4% of loop time
-    # point2 = plib.pp_get_pos(track.track()[-1].position)
-    if (track.hit_geometry(detector) or config_file.every_particle_hits_detector):
-    # if (point2[2] <= config_file.detector_pos[2]):
+    point2 = plib.pp_get_pos(track.track()[-1].position)
+
+    # if (point2[2] <= cfg.detector_bottom_depth or
+    if (track.hit_geometry(detector) or 
+        cfg.every_particle_hits_detector):
         hit_detector = True
 
         # t1.task('write propagate array and write to array')  # 14% loop time
@@ -88,7 +89,7 @@ def pp_propagate(input):
         energy_at_track_end = track.track_energies()[-1]
 
         # t1.task('add start points to array')  # 41% of loop time TODO
-        point1 =  plib.pp_get_pos(init_state.position)
+        point1 = plib.pp_get_pos(init_state.position)
         point2 = plib.pp_get_pos(track.track()[-1].position)
         point1x = point1[0]
         point1y = point1[1]
