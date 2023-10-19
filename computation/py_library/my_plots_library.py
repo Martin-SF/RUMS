@@ -133,6 +133,48 @@ def plot_3D_start_end(dataset,
         plt.show()
 
 
+def plot_3D_end(dataset, 
+            detector_pos = None, 
+            detector_size = None, 
+            elev=30.0, 
+            azim=30, 
+            alpha=0.1, 
+            name = 'PP - 3D_end', 
+            title = 'plot_3D_end', 
+            dpi=400, 
+            show=True, 
+            **kwargs):
+    # original function by dominik baar
+    # fig = plt.figure(figsize=(16, 16))
+    fig = plt.figure(figsize=(8, 8))
+    ax = plt.axes(projection='3d')
+    ax.set_xlabel('x [m]')
+    ax.set_ylabel('y [m]')
+    ax.set_zlabel('z [m]')
+    ax.view_init(elev=elev, azim=azim)
+    ax.set_title(title, pad = -200)
+
+    # plot first startpoint
+    # ax.plot(dataset[0,0], dataset[0,1], dataset[0,2], '.', c='black', markersize=30, zorder=4, label='particle origin')
+    
+    # plot alle points
+    ax.plot(dataset[:,0], dataset[:,1], dataset[:,2], '.', c='orange', markersize=4, label='muon start/final pos')
+
+    # ls = dataset[:,0:3].reshape((-1,2,3))
+    # collection = Line3DCollection(ls, linewidths=0.5, colors='blue', alpha=alpha, zorder=0, label = f'linear muon trajectory')
+    # ax.add_collection(collection)
+
+    if (detector_pos!=None) and (detector_size!=None):
+        plotCubeAt(pos=detector_pos, size=detector_size, ax=ax, color='black', alpha=1)
+
+    ax.legend()
+    # ax.set_aspect('equal')
+
+    plt.savefig(f'figures/{name}.pdf', bbox_inches="tight", dpi = dpi)
+    if (show):
+        plt.show()
+
+
 def plotCubeAt(pos=(0,0,0), size=(1,1,1), ax=None, **kwargs):
     # from https://stackoverflow.com/questions/49277753/python-matplotlib-plotting-cuboids
     # Plotting a cube element at position pos
