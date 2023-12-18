@@ -2,7 +2,7 @@
 
 All simulations are performed in `computation/computation.ipynb`
 
-## Preparations
+## Setup
 
 ### Clone repo
 
@@ -42,7 +42,7 @@ All simulations are performed in `computation/computation.ipynb`
 
 Don't forget to restart the conda environment! (also VSCode as whole is a good idea)
 
-Now you can continue in `computation/computation.ipynb`!
+Now you can continue in `computation/computation.ipynb`.
 
 
 # Tips
@@ -51,5 +51,6 @@ Now you can continue in `computation/computation.ipynb`!
 
 * use subfolder parameter for marking of individual tests
 
-* You can get more insights of the calculations on the dask dashboard on localhost:8787
+* You can get more performance insights on the dask dashboard on localhost:8787
 
+* update packages: `conda update --all` and `pip install -U -r requirements.txt`
