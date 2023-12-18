@@ -28,19 +28,40 @@
 #include <random>
 
 const double MMU = 0.1056583745;
+// for JGuan parametrisation https://arxiv.org/abs/1509.06176
+const double P1 = 0.102573;
+const double P2 = -0.068287;
+const double P3 = 0.958633;
+const double P4 = 0.0407253;
+const double P5 = 0.817285;
 
 static double JGuan(double p, double theta) {
+  // https://arxiv.org/abs/1509.06176
+  double M = pow(cos(theta), 2) + pow(P1, 2) + P2*pow(cos(theta), P3) + P4*pow(cos(theta),P5);
+  double N = 1 + pow(P1, 2) + P2 * P4;
+  double cos_mod = sqrt( M / N );
+
   double E = sqrt( p*p + MMU*MMU );
-  double X = E * (1. + 3.64 / (E * pow(cos(theta), 1.29)));
-  double A = 0.14*pow(X, -2.7);
+  double X = E * (1. + 3.64 / (E * pow(cos_mod, 1.29)));
+  double A = 0.14 * pow(X, -2.7);
+  double B = 1.    / (1. + 1.1*E*cos_mod/115.);
+  double C = 0.054 / (1. + 1.1*E*cos_mod/850.);
+  return A*(B+C);
+};
+
+
+static double JGaisser(double p, double theta) {
+  double E = sqrt( p*p + MMU*MMU );
+  double A = 0.14*pow(E, -2.7);
   double B = 1. / (1. + 1.1*E*cos(theta)/115.);
   double C = 0.054 / (1. + 1.1*E*cos(theta)/850.);
   return A*(B+C);
 };
 
-static double JGaisser(double p, double theta) {
+
+static double JGaisser_samp(double p, double theta, double gamma) {
   double E = sqrt( p*p + MMU*MMU );
-  double A = 0.14*pow(E, -2.7);
+  double A = 0.14*pow(E, -gamma);
   double B = 1. / (1. + 1.1*E*cos(theta)/115.);
   double C = 0.054 / (1. + 1.1*E*cos(theta)/850.);
   return A*(B+C);
@@ -412,6 +433,11 @@ public:
 
   void SetDifferentialFluxGaisser() {
     SetDifferentialFlux(&JGaisser);
+  };
+
+  void SetDifferentialFluxGaisserSamp(double gamma) {
+    auto fg = std::bind(JGaisser_samp, std::placeholders::_1, std::placeholders::_2, gamma);
+    SetDifferentialFlux(fg);
   };
 
   /// Set the seed for the internal PRNG (if 0 a random seed is used)

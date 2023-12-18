@@ -60,7 +60,8 @@ meta={
     'point1z_raw': FLOAT_TYPE, 
     'point2x_raw': FLOAT_TYPE,
     'point2y_raw': FLOAT_TYPE,
-    'point2z_raw': FLOAT_TYPE
+    'point2z_raw': FLOAT_TYPE,
+    'theta_i_raw': FLOAT_TYPE
 }
 
 
@@ -107,11 +108,13 @@ point1z_raw = np.array(results['point1z_raw'], dtype=FLOAT_TYPE)
 point2x_raw = np.array(results['point2x_raw'], dtype=FLOAT_TYPE)
 point2y_raw = np.array(results['point2y_raw'], dtype=FLOAT_TYPE)
 point2z_raw = np.array(results['point2z_raw'], dtype=FLOAT_TYPE)
+theta_i_raw = np.array(results['theta_i_raw'], dtype=FLOAT_TYPE)
 
 counter = int(sum(hit_detector))  # len von allen die True sind
 energies_f = np.zeros(counter, dtype=FLOAT_TYPE)
 energies_i = np.zeros(counter, dtype=FLOAT_TYPE)
 distances_f = np.zeros(counter, dtype=FLOAT_TYPE)
+theta_i = np.zeros(counter, dtype=FLOAT_TYPE)
 start_points = np.zeros(shape=(counter, 3), dtype=FLOAT_TYPE)
 end_points = np.zeros(shape=(counter, 3), dtype=FLOAT_TYPE)
 start_end_points = np.zeros(shape=(counter*2, 3), dtype=FLOAT_TYPE)
@@ -123,6 +126,7 @@ for i in range(STATISTICS):
         energies_f[i2] = energies_f_raw[i]
         energies_i[i2] = energies_i_raw[i]
         distances_f[i2] = distances_f_raw[i]
+        theta_i[i2] = theta_i_raw[i]
 
         start_points[i2] = np.array([point1x_raw[i], point1y_raw[i], point1z_raw[i]])
         end_points[i2] = np.array([point2x_raw[i], point2y_raw[i], point2z_raw[i]])
@@ -143,6 +147,7 @@ df['point1z'] = start_points[:, 2]
 df['point2x'] = end_points[:, 0]
 df['point2y'] = end_points[:, 1]
 df['point2z'] = end_points[:, 2]
+df['theta_i'] = theta_i
 
 t2.task('write to HDF file')
 df.to_hdf(cfg.hdf_folder+cfg.file_name_results, key=f'main', format='table')

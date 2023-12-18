@@ -1,12 +1,12 @@
-import EcoMug as em  # findable when setting PYTHONPATH to build folder
 import numpy as np
-from numba import vectorize
-# import py_library.simulate_lib as slib  # this import caused problems on some systems
-import config as cfg
-import proposal as pp
-from importlib import reload
 import math
 import random
+from numba import vectorize
+from importlib import reload
+# import py_library.simulate_lib as slib  # this import caused problems on some systems
+import EcoMug # findable when setting PYTHONPATH to build folder
+import proposal as pp
+import config as cfg
 
 reload(cfg)
 
@@ -19,7 +19,7 @@ def calculate_momentum_vectorized_GeV(energy):
 
 
 
-gen = em.EcoMug()
+gen = EcoMug.EcoMug()
 gen.SetUseSky()  # plane surface generation
 gen.SetSkySize((0, 0))  # x and y size of the plane
 gen.SetSkyCenterPosition((0, 0, 0))  # (x,y,z) position of the center of the plane
@@ -31,6 +31,8 @@ if cfg.max_E!='':
     gen.SetMaximumMomentum(calculate_momentum_vectorized_GeV(int(float(cfg.max_E))))
 if cfg.param=='gaisser':
     gen.SetDifferentialFluxGaisser()
+if cfg.param=='gaisser_samp':
+    gen.SetDifferentialFluxGaisserSamp(cfg.gaisser_gamma)
 elif cfg.param=='guan':
     gen.SetDifferentialFluxGuan()
 
@@ -70,7 +72,7 @@ def Ecomug_generate(_):
     # distribute the muons evenly on a target circle around the detector
     angle = random.uniform(0, 2 * math.pi)
     # r2 = random.uniform(0, cfg.radius_target_circle)
-    r2 = cfg.radius_target_circle * math.sqrt(random.uniform(0, 1)) # 74.1, 74.3, 74.2s
+    r2 = cfg.detector_target_circle * math.sqrt(random.uniform(0, 1)) # 74.1, 74.3, 74.2s
     # r2 = np.sqrt(np.random.rand()) * cfg.radius_target_circle  # 76.9, 75.5, 74.6s
     x = x + r2 * math.cos(angle)
     y = y + r2 * math.sin(angle)

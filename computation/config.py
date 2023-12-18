@@ -17,16 +17,14 @@ silent = True  # stopwatch prints silent
 
 # for identifiying different runs
 subfolder = 'ms_6/'
-subfolder = 'test/'
 subfolder = 't2_r0_1/'
 subfolder = 't3_r1percent_3/'
+subfolder = 'test4/'  # gamma = 1
+subfolder = 'gaisser_plots/'  # gamma = 0.6
+subfolder = 'test3/'  # gamma = 0.6
+subfolder = 'gamma06/'  # gamma = 0.6
+subfolder = 'gamma06_v2/'  # gamma = 0.6
 
-
-
-
-###########################################################
-###########################################################
-###########################################################
 # Dask Distributed settings
 
 # set of "tasks" into which the task should be divided. 
@@ -52,21 +50,27 @@ EcoMug_seed = 1909
 # muon parametrisation
 param = 'guan'
 param = 'std'
+gaisser_gamma = 0.6
 param = 'gaisser'  # bachelor thesis results value
+param = 'gaisser_samp'  # bachelor thesis results value
 
 
-# min / max theta (in degrees)
-# Ecomug wants altitude angle not azimuth angle
-# (i couldnt find where this is documented...) the conversion is in d_EM_lib.py
 
-# in the bachelor thesis results were wrong because of the different azimuth convention
+# min / max theta (in degrees) azimuth angle
+# (Ecomug expects altitude angle not azimuth angle, I couldnt find where this is actually documented...)
+# the thetas are getting automatically converted in d_EM_lib.py
+# the bachelor thesis results are flawed because of this
 
 # min_theta = ''
 min_theta = 0  # bachelor thesis results value   # 3D settings
+# min_theta = 75  #
+# min_theta = 56  #
 
 # max_theta = ''
 # max_theta = 30  # bachelor thesis results value
 max_theta = 60  # 3D settings
+# max_theta = 75  # 3D settings
+# max_theta = 56  # 3D settings
 
 
 # amount of muons generated
@@ -87,6 +91,7 @@ STATISTICS = '1e7'  # bachelor thesis results value
 # min Energy (GeV)
 min_E = ''  # use standard value
 min_E = '6e2'  # bachelor thesis results value
+min_E = '8'  # 3D optimized
 min_E = '730'  # 3D optimized
 
 # max Energy (GeV)
@@ -94,7 +99,9 @@ max_E = ''  # use standard value (999 GeV momentum)
 max_E = '1e6'  # unuseable with gaisser
 max_E = '1e3'  # good for min_E = ''
 max_E = '2e5'  # bachelor thesis results value
+max_E = '4e3' 
 max_E = '3e5' 
+max_E = '1e6'  # new energy threshord for gaisser_samp
 
 
 
@@ -104,7 +111,7 @@ max_E = '3e5'
 ############################################################
 # PROPOSAL (d_pp.py and d_pp_lib.py)
 
-PROPOSAL_seed = int(np.random.random()*10000)
+PROPOSAL_seed = 1909
 pp_tables_path = "/tmp/"
 pp_tables_path = "/scratch/mschoenfeld/tables_path"
 
@@ -153,48 +160,24 @@ detector_bottom_depth = detector_pos[2] - detector_height/2
 
 # PROPOSAL: max_distance, min_energy, hierarchy_condition
 # propagate_settings = (1e20, 0, 10)  # bachelor thesis results value
-safety_puffer_propagate_puffer = 1.3
-max_propagate_distance = int(np.tan(np.radians(max_theta)) * (abs(detector_bottom_depth) * safety_puffer_propagate_puffer))
+buffer_max_propagate_distance = 1.3
+max_propagate_distance = int((abs(detector_bottom_depth) * buffer_max_propagate_distance) / np.cos(np.radians(max_theta)))
 propagate_settings = (max_propagate_distance, 0, 10)  # 3D
 
-safety_puffer_propagate_puffer = 1
-radius_target_circle = np.tan(np.radians(max_theta)) * (detector_height * safety_puffer_propagate_puffer)  # 1.1 for deflection safety?
+buffer_radius_target_circle = 1
+detector_target_circle = np.tan(np.radians(max_theta)) * (detector_height * buffer_radius_target_circle)  # 1.1 for deflection safety?
 
-radius_buffer = 4.709 * 1e2  # only missing 10.002 % of all particles
-radius_buffer = 8.75 * 1e2  # only missing 1.002 % of all particles   # test: t3_r1percent_2
-radius_buffer = 18.5 * 1e2  # only missing 0.101 % of all particles
-radius_buffer = 55 * 1e2    # only missing 0.0102 % of all particles   # test: t3_r1percent_1
-radius_buffer = 1.94655 * 1e2  # only missing 50.0001 % % of all particles   # test: t3_r1percent_3
-
-radius_target_circle = radius_target_circle + radius_buffer
+# tests of the effect of changes of the angle due to multiple_scattering and stochastic_deflection
+# radius_target_circle = 55 * 1e2       # 0.0102  % of all particles missing  # test: t3_r1percent_1
+# radius_target_circle = 18.5 * 1e2     # 0.101   % of all particles missing
+# radius_target_circle = 17.32 * 1e2    # 0.117   % of all particles missing (for max_theta=60 and detector_height=10m)
+# radius_target_circle = 8.75 * 1e2     # 1.002   % of all particles missing  # test: t3_r1percent_2
+# radius_target_circle = 4.709 * 1e2    # 10.002  % of all particles missing
+# radius_target_circle = 1.94655 * 1e2  # 50.0001 % of all particles missing  # test: t3_r1percent_3
 
 detector_area = 75  # bachelor thesis results value
-# detector_area = detector_area * calibrate_which_get_detected
-# this is the artificial detector area covering all incoming muons
-artificial_detector_area = np.pi * radius_target_circle**2
-
-
-### calibrate todos
-# calibrate useless .... (discarded)
-# change to calibrate json
-# change detector_pos
-# set calibrate to True (disables repositioning in ecomug)
-# calibrate = False
-
-# if (calibrate == True):
-#     PP_config = 'kirchhellen_AVG_3D_calibrate.json'
-
-#     STATISTICS = '1e5'
-
-#     min_E = '6e3'
-#     min_E = '6e4'
-#     min_E = '6e8'
-#     max_E = '2e9'
-
-#     # detector_pos = (0, 0, -500)  # calibrate
-
-# (11932.0) of 1e+06 (1.193)% detector hits | min(E_i) at detector = 600.0 GeV
-# calibrate_which_get_detected = 0.01235
+# this is the artificial two dimensional projected detector area covering all incoming muons
+detector_artificial_area = np.pi * detector_target_circle**2
 
 
 
@@ -218,7 +201,12 @@ with open(path_to_config_file, 'r+') as file:
     json.dump(data, file, indent=4)
     file.truncate()     # remove remaining part
 
-file_name_ = f'EcoMug_{STATISTICS}_{param}_min{min_E}_max{max_E}_{max_theta}deg_3D.hdf'
+if param == "gaisser_samp":
+    param_ = param+"_"+str(gaisser_gamma)
+else:
+    param_ = param
+
+file_name_ = f'EcoMug_{STATISTICS}_{param_}_min{min_E}_max{max_E}_{max_theta}deg_3D.hdf'
 file_name_results = f'{subfolder}{PP_config}_{pp_config_string}_{file_name_}'
 file_name = f'{subfolder}{file_name_}'
 
@@ -230,3 +218,42 @@ if not os.path.exists(f'{hdf_folder}{subfolder}'):
 
 
 STATISTICS = int(float(STATISTICS))
+
+
+def gaisser(theta, E, gamma=2.7):
+    return 0.14*E**(-gamma)*(
+                    1    /(1 + 1.1 * E * np.cos(theta) / (115))
+                  + 0.054/(1 + 1.1 * E * np.cos(theta) / (850))
+                )
+    
+# this is the function with which the events were sampled
+gaisser_samp = lambda theta, E: gaisser(theta, E, gaisser_gamma)
+# this is the distribution we want
+gaisser_wanted = lambda theta, E: gaisser(theta, E, 2.7)
+
+
+from scipy.integrate import dblquad
+def get_weights(mode, energy, theta):
+    # calculating the total flux makes it possible to make the sampled function a probability distribution
+    total_flux_samp, total_flux_samp_unc = (2*np.pi*sol for sol in dblquad(gaisser_samp,
+        float(min_E), float(max_E),
+        lambda E: np.radians(float(min_theta)), lambda E: np.radians(float(max_theta))
+        ))
+    # print(f"muons_per_cm2_per_second sampled: {total_flux_samp:.3e} +- {total_flux_samp_unc:.3e}")
+
+    if (mode == "counts"):
+        # calculating the total flux makes it possible to make the sampled function a probability distribution
+        total_flux_wanted, total_flux_wanted_unc = (2*np.pi*sol for sol in dblquad(gaisser_wanted,
+            float(min_E), float(max_E),
+        lambda E: np.radians(float(min_theta)), lambda E: np.radians(float(max_theta))
+        ))
+        weights_numbers = gaisser_wanted(theta, energy) / (gaisser_samp(theta, energy)/total_flux_samp) * (1/total_flux_wanted)
+        return weights_numbers
+    elif (mode == "flux"):
+        weights_flux = (
+            gaisser_wanted(theta, energy)/(gaisser_samp(theta, energy)/total_flux_samp)
+            * (1/len(energy))
+        )
+        return weights_flux
+    else:
+        print(f"get_weights: ERROR! only mode  - counts - or - flux - available")

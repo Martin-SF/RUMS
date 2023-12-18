@@ -54,7 +54,7 @@ print(f'generating {cfg.file_name}')
 chunksize = round((cfg.STATISTICS/cfg.N_tasks))+1
 
 # local variable!!!
-# workaround für viele tasks 
+# workaround for a lot of tasks
 tmphdf = cfg.hdf_folder+'tmp.hdf'
 t.task('create zero hdf 1')
 df = pd.DataFrame()
@@ -89,7 +89,7 @@ muon_theta = np.array(results_array[:, 4], dtype=float)
 muon_phi = np.array(results_array[:, 5], dtype=float)
 muon_charge = np.array(results_array[:, 6], dtype=np.int8)
 
-muon_e = slib.calculate_energy_vectorized_GeV(muon_p)  # faster than for loop
+muon_e = slib.calculate_energy_vectorized_GeV(muon_p)  # faster than for-loop
 
 
 # muon_phi = (muon_phi + np.pi) % (2*np.pi)

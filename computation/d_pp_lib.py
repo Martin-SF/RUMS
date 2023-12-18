@@ -77,7 +77,7 @@ def pp_propagate(input):
         # muons.append(current_muon)
 
     # t1.task('did geometry hit?')  # 4% of loop time
-    point2 = plib.pp_get_pos(track.track()[-1].position)
+    # point2 = plib.pp_get_pos(track.track()[-1].position)
 
     # if (point2[2] <= cfg.detector_bottom_depth or
     if (track.hit_geometry(detector) or 
@@ -97,6 +97,7 @@ def pp_propagate(input):
         point2x = point2[0]
         point2y = point2[1]
         point2z = point2[2]
+        theta_i_raw = theta
     else:
         # print(track.track()[-1].position.y)
         # print(input)
@@ -109,11 +110,12 @@ def pp_propagate(input):
         point2x = None
         point2y = None
         point2z = None
-        
+        theta_i_raw = None
+
 
     # print(position, energy_init, theta, phi, charge)
     # hit_detector = False  
     # t1.stop()
 
     return (hit_detector, distance_at_track_end, energy_at_track_end, 
-    energy_init, point1x, point1y, point1z, point2x, point2y, point2z)
+    energy_init, point1x, point1y, point1z, point2x, point2y, point2z, theta_i_raw)
